@@ -1,0 +1,52 @@
+
+PREREQUISITES
+
+- Linux (I built this under 64-bit CENTOS 7; can't vouche for anything else)
+
+- Python 2.7 (I built this with 2.7.5; can't vouche for anything else)
+
+- Solace CCSMP libraries installed locally, and included in your LD_LIBRARY_PATH
+
+This also uses a wrapper C shared library for the Solace API that simplifies the API enough for mapping to pything ctypes. If you are interested in that code I can share that as well.
+
+
+PREPARING FOR TESTS
+1) Run the test vpn setup script
+There is sample code which attempts to connect to a msg-vpn named 'pysol_test' with specific assumptions around queues and users. A CLI script to create this test vpn is provided within this distribution as 'pysol_create.cli'. Upload this to a Solace appliance (hw or vmr) and run it via the command:
+    solace> source script /cliscripts/pysol_create.cli stop-on-error no-prompt
+
+2) Modify a properties file (e.g. properties/citadel.properties) to point to your Solace IP/hostname in the SESSION_HOST field
+
+
+RUNNING TESTS
+linux% ./run_tests.sh
+
+The tests are mainly written as code samples, but all expect a single parameter with the properties file with info for connecting to Solace.
+
+tests/direct_test:
+basic Solace client validating direct messaging 
+
+tests/string_payload_test:
+basic Solace client validating direct messaging with a python string as the payload.
+
+tests/object_payload_test:
+basic Solace client validating direct messaging with a python object payload serialized via the python 'marshal' module.
+
+tests/persistent_test:
+Basic Solace client validating simple persistent messaging with auto-ack.
+NOTE: You must have a queue named q0 provisioned, enabled and mapped to the appropriate topic for all persistent tests to work.
+
+tests/persistent_ack_test:
+Solace client validating persistent messaging with subscriber manual ack.
+NOTE: You must have a queue named q0 provisioned, enabled and mapped to the appropriate topic for all persistent tests to work.
+
+test/persistent_streaming_test:
+Solace client validating persistent messaging with publisher correlation-events and subscriber manual ack.
+NOTE: You must have a queue named q0 provisioned, enabled and mapped to the appropriate topic for all persistent tests to work.
+
+tests/cache_test:
+Basic synchronous SolCache request validation. 
+
+NOTE: You must have the appropriate solcache-instance provisioned w/appropriate remote-topics configured.
+
+
